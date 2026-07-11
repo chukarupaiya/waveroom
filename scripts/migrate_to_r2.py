@@ -101,12 +101,28 @@ def r2_client():
     return client, os.environ["R2_BUCKET_NAME"]
 
 
+def _object_exists(client, bucket, key) -> bool:
+    """True if the object is already in the bucket (so re-runs skip it)."""
+    import botocore
+
+    try:
+        client.head_object(Bucket=bucket, Key=key)
+        return True
+    except botocore.exceptions.ClientError:
+        return False
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument(
         "--manifest-only",
         action="store_true",
         help="Write music.json without uploading to R2.",
+    )
+    ap.add_argument(
+        "--force",
+        action="store_true",
+        help="Re-upload objects even if they already exist in the bucket.",
     )
     args = ap.parse_args()
 
@@ -131,15 +147,21 @@ def main() -> None:
 
         if client is not None:
             key = f"{SONGS_PREFIX}/{filename}" if SONGS_PREFIX else filename
-            client.upload_file(str(path), bucket, key,
-                               ExtraArgs={"ContentType": "audio/flac"})
-            print(f"  ↑ {key}")
+            if not args.force and _object_exists(client, bucket, key):
+                print(f"  = {key} (already in bucket, skip)")
+            else:
+                client.upload_file(str(path), bucket, key,
+                                   ExtraArgs={"ContentType": "audio/flac"})
+                print(f"  ↑ {key}")
             if has_art:
                 art_key = f"art/{tid}.jpg"
-                client.put_object(Bucket=bucket, Key=art_key,
-                                  Body=meta["art_data"],
-                                  ContentType=meta["art_mime"] or "image/jpeg")
-                print(f"  ↑ {art_key}")
+                if not args.force and _object_exists(client, bucket, art_key):
+                    pass
+                else:
+                    client.put_object(Bucket=bucket, Key=art_key,
+                                      Body=meta["art_data"],
+                                      ContentType=meta["art_mime"] or "image/jpeg")
+                    print(f"  ↑ {art_key}")
 
         _pfx = f"{SONGS_PREFIX}/" if SONGS_PREFIX else ""
         r2_url = f"{public_base}/{_pfx}{quote(filename)}" if public_base else None
