@@ -33,6 +33,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 MUSIC_DIR = Path(os.environ.get("MUSIC_DIR", REPO_ROOT / "music"))
 MANIFEST_PATH = REPO_ROOT / "music.json"
 SUPPORTED_EXT = {".flac"}
+# Bucket key prefix for songs. Must match backend music_library.R2_SONGS_PREFIX.
+SONGS_PREFIX = os.environ.get("R2_SONGS_PREFIX", "music").strip("/")
 
 
 def track_id(filename: str) -> str:
@@ -128,7 +130,7 @@ def main() -> None:
         has_art = meta["art_data"] is not None
 
         if client is not None:
-            key = f"songs/{filename}"
+            key = f"{SONGS_PREFIX}/{filename}" if SONGS_PREFIX else filename
             client.upload_file(str(path), bucket, key,
                                ExtraArgs={"ContentType": "audio/flac"})
             print(f"  ↑ {key}")
@@ -139,7 +141,8 @@ def main() -> None:
                                   ContentType=meta["art_mime"] or "image/jpeg")
                 print(f"  ↑ {art_key}")
 
-        r2_url = f"{public_base}/songs/{quote(filename)}" if public_base else None
+        _pfx = f"{SONGS_PREFIX}/" if SONGS_PREFIX else ""
+        r2_url = f"{public_base}/{_pfx}{quote(filename)}" if public_base else None
         art_url = (f"{public_base}/art/{tid}.jpg"
                    if (public_base and has_art) else
                    (f"/art/{tid}" if has_art else None))

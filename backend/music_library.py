@@ -29,13 +29,17 @@ SUPPORTED_EXT = {".flac"}
 # temporary *.r2.dev URL). When set, each track exposes an r2_url the frontend
 # prefers; the local /stream endpoint remains as a fallback. Empty => R2 off.
 R2_PUBLIC_BASE = os.environ.get("R2_PUBLIC_BASE", "").rstrip("/")
+# Object key prefix under which songs live in the bucket (matches how they were
+# uploaded). Default "music" mirrors the local /music folder. Set "" for root.
+R2_SONGS_PREFIX = os.environ.get("R2_SONGS_PREFIX", "music").strip("/")
 
 
 def _r2_url(filename: str) -> Optional[str]:
     if not R2_PUBLIC_BASE:
         return None
     from urllib.parse import quote
-    return f"{R2_PUBLIC_BASE}/songs/{quote(filename)}"
+    prefix = f"{R2_SONGS_PREFIX}/" if R2_SONGS_PREFIX else ""
+    return f"{R2_PUBLIC_BASE}/{prefix}{quote(filename)}"
 
 
 def _track_id(filename: str) -> str:
