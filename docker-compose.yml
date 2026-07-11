@@ -1,0 +1,17 @@
+services:
+  backend:
+    build: ./backend
+    # Mount your local music folder so dropped FLAC files appear live
+    volumes:
+      - ./backend/music:/app/music
+    expose:
+      - "8000"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    restart: unless-stopped

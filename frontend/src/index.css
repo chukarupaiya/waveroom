@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #08080f;
+  color: #e9e9f5;
+  font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Ambient aurora background driven by --mx / --my cursor variables */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(
+      40rem 40rem at calc(var(--mx, 50%) ) calc(var(--my, 35%) ),
+      rgba(168, 85, 247, 0.18),
+      transparent 60%
+    ),
+    radial-gradient(
+      32rem 32rem at calc(100% - var(--mx, 50%)) calc(100% - var(--my, 50%)),
+      rgba(6, 182, 212, 0.14),
+      transparent 60%
+    ),
+    #08080f;
+  transition: background 0.2s ease-out;
+}
+
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(circle at 50% 30%, black, transparent 80%);
+}
+
+.glass {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.04) 45%,
+      rgba(255, 255, 255, 0.03) 100%
+    );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  /* glossy top-edge highlight + soft depth shadow */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 0 24px rgba(255, 255, 255, 0.03),
+    0 12px 32px -14px rgba(0, 0, 0, 0.55);
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #a855f7, #06b6d4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.btn-glow {
+  box-shadow: 0 0 0 rgba(168, 85, 247, 0);
+  transition: box-shadow 0.3s ease, transform 0.15s ease;
+}
+.btn-glow:hover {
+  box-shadow: 0 0 28px rgba(168, 85, 247, 0.5);
+  transform: translateY(-1px);
+}
+
+/* thin scrollbars */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.4);
+  border-radius: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #a855f7;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.8);
+}

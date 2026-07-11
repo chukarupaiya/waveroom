@@ -1,0 +1,11 @@
+# Render Blueprint — deploys JamSync as one free Docker web service.
+# In the Render dashboard: New + -> Blueprint -> pick this repo.
+services:
+  - type: web
+    name: jamsync
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    # WebSockets work on Render web services with no extra config.
+    autoDeploy: true

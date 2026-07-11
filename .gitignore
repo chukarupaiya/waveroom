@@ -1,0 +1,15 @@
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+backend/.venv/
+*.pyc
+
+# Music lives at /music (repo root) and is committed as a LOCAL FALLBACK for the
+# backend /stream endpoint; R2 is the primary source. Files must stay under
+# GitHub's 100MB limit to be tracked. The one FLAC over that limit is excluded
+# here and served ONLY from R2 (no local fallback for it).
+/music/Harris Jayaraj - Vinnaithaandi.flac
+
